@@ -1,9 +1,10 @@
 """ This file defines the data logger. """
 import logging
+
 try:
-   import cPickle as pickle
+    import _pickle as pickle
 except:
-   import pickle
+    import pickle
 
 
 LOGGER = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ class DataLogger(object):
     TODO: Handle logging data to terminal, GUI text/plots, and/or data
           files.
     """
+
     def __init__(self):
         pass
 

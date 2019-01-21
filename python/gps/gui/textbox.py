@@ -7,24 +7,24 @@ If a log filename is given, all text displayed by the Textbox is also placed
 within the log file.
 """
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 from matplotlib.colors import ColorConverter
 
 
 class Textbox:
 
     def __init__(self, fig, gs, log_filename=None, max_display_size=10,
-        border_on=False, bgcolor=mpl.rcParams['figure.facecolor'], bgalpha=1.0,
-        fontsize=12, font_family='sans-serif'):
+                 border_on=False, bgcolor=mpl.rcParams['figure.facecolor'], bgalpha=1.0,
+                 fontsize=12, font_family='sans-serif'):
         self._fig = fig
         self._gs = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs)
         self._ax = plt.subplot(self._gs[0])
         self._log_filename = log_filename
 
         self._text_box = self._ax.text(0.01, 0.95, '', color='black',
-                va='top', ha='left', transform=self._ax.transAxes,
-                fontsize=fontsize, family=font_family)
+                                       va='top', ha='left', transform=self._ax.transAxes,
+                                       fontsize=fontsize, family=font_family)
         self._text_arr = []
         self._max_display_size = max_display_size
 
@@ -40,7 +40,7 @@ class Textbox:
         self._fig.canvas.flush_events()     # Fixes bug with Qt4Agg backend
         self.set_bgcolor(bgcolor, bgalpha)  # this must come after fig.canvas.draw()
 
-    #TODO: Add docstrings here.
+    # TODO: Add docstrings here.
     def set_text(self, text):
         self._text_arr = [text]
         self._text_box.set_text('\n'.join(self._text_arr))
@@ -61,14 +61,14 @@ class Textbox:
                 f.write(text + '\n')
 
     def set_bgcolor(self, color, alpha=1.0):
-        self._ax.set_axis_bgcolor(ColorConverter().to_rgba(color, alpha))
+        self._ax.set_facecolor(ColorConverter().to_rgba(color, alpha))
         self.draw()
 
     def draw(self):
-        color, alpha = self._ax.get_axis_bgcolor(), self._ax.get_alpha()
-        self._ax.set_axis_bgcolor(mpl.rcParams['figure.facecolor'])
+        color, alpha = self._ax.get_facecolor(), self._ax.get_alpha()
+        self._ax.set_facecolor(mpl.rcParams['figure.facecolor'])
         self._ax.draw_artist(self._ax.patch)
-        self._ax.set_axis_bgcolor(ColorConverter().to_rgba(color, alpha))
+        self._ax.set_facecolor(ColorConverter().to_rgba(color, alpha))
 
         self._ax.draw_artist(self._ax.patch)
         self._ax.draw_artist(self._text_box)

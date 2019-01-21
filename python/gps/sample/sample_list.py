@@ -1,17 +1,17 @@
 """ This file defines the sample list wrapper and sample writers. """
-import cPickle
 import logging
 
 import numpy as np
 
+import _pickle as cPickle
 from gps.proto.gps_pb2 import NOISE
-
 
 LOGGER = logging.getLogger(__name__)
 
 
 class SampleList(object):
     """ Class that handles writes and reads to sample data. """
+
     def __init__(self, samples):
         self._samples = samples
 
@@ -59,6 +59,7 @@ class SampleList(object):
 
 class PickleSampleWriter(object):
     """ Pickles samples into data_file. """
+
     def __init__(self, data_file):
         self._data_file = data_file
 
@@ -70,6 +71,7 @@ class PickleSampleWriter(object):
 
 class SysOutWriter(object):
     """ Writes notifications to sysout on sample writes. """
+
     def __init__(self):
         pass
 

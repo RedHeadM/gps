@@ -72,6 +72,11 @@ AGENT_MUJOCO = {
     'meta_include': []
 }
 
+
 AGENT_BOX2D = {
+    'render': True,
+}
+
+AGENT_BULLET = {
     'render': True,
 }

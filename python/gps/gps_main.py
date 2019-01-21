@@ -1,28 +1,32 @@
 """ This file defines the main object that runs experiments. """
 
-import matplotlib as mpl
-mpl.use('Qt4Agg')
-
-import logging
+import argparse
+import copy
 import imp
+import logging
 import os
 import os.path
 import sys
-import copy
-import argparse
 import threading
 import time
 import traceback
 
+import matplotlib as mpl
+from gps.gui.gps_training_gui import GPSTrainingGUI
+from gps.sample.sample_list import SampleList
+from gps.utility.data_logger import DataLogger
+
+# mpl.use('Agg')
+mpl.use('Qt5Agg')
+
+
 # Add gps/python to path so that imports work.
 sys.path.append('/'.join(str.split(__file__, '/')[:-2]))
-from gps.gui.gps_training_gui import GPSTrainingGUI
-from gps.utility.data_logger import DataLogger
-from gps.sample.sample_list import SampleList
 
 
 class GPSMain(object):
     """ Main class to run algorithms and experiments. """
+
     def __init__(self, config, quit_on_end=False):
         """
         Initialize GPSMain
@@ -39,7 +43,7 @@ class GPSMain(object):
         else:
             self._train_idx = range(self._conditions)
             config['common']['train_conditions'] = config['common']['conditions']
-            self._hyperparams=config
+            self._hyperparams = config
             self._test_idx = self._train_idx
 
         self._data_files_dir = config['common']['data_files_dir']
@@ -97,9 +101,9 @@ class GPSMain(object):
         self.algorithm = self.data_logger.unpickle(algorithm_file)
         if self.algorithm is None:
             print("Error: cannot find '%s.'" % algorithm_file)
-            os._exit(1) # called instead of sys.exit(), since t
+            os._exit(1)  # called instead of sys.exit(), since t
         traj_sample_lists = self.data_logger.unpickle(self._data_files_dir +
-            ('traj_sample_itr_%02d.pkl' % itr))
+                                                      ('traj_sample_itr_%02d.pkl' % itr))
 
         pol_sample_lists = self._take_policy_samples(N)
         self.data_logger.pickle(
@@ -109,10 +113,10 @@ class GPSMain(object):
 
         if self.gui:
             self.gui.update(itr, self.algorithm, self.agent,
-                traj_sample_lists, pol_sample_lists)
+                            traj_sample_lists, pol_sample_lists)
             self.gui.set_status_text(('Took %d policy sample(s) from ' +
-                'algorithm state at iteration %d.\n' +
-                'Saved to: data_files/pol_sample_itr_%02d.pkl.\n') % (N, itr, itr))
+                                      'algorithm state at iteration %d.\n' +
+                                      'Saved to: data_files/pol_sample_itr_%02d.pkl.\n') % (N, itr, itr))
 
     def _initialize(self, itr_load):
         """
@@ -132,19 +136,19 @@ class GPSMain(object):
             self.algorithm = self.data_logger.unpickle(algorithm_file)
             if self.algorithm is None:
                 print("Error: cannot find '%s.'" % algorithm_file)
-                os._exit(1) # called instead of sys.exit(), since this is in a thread
+                os._exit(1)  # called instead of sys.exit(), since this is in a thread
 
             if self.gui:
                 traj_sample_lists = self.data_logger.unpickle(self._data_files_dir +
-                    ('traj_sample_itr_%02d.pkl' % itr_load))
+                                                              ('traj_sample_itr_%02d.pkl' % itr_load))
                 if self.algorithm.cur[0].pol_info:
                     pol_sample_lists = self.data_logger.unpickle(self._data_files_dir +
-                        ('pol_sample_itr_%02d.pkl' % itr_load))
+                                                                 ('pol_sample_itr_%02d.pkl' % itr_load))
                 else:
                     pol_sample_lists = None
                 self.gui.set_status_text(
                     ('Resuming training from algorithm state at iteration %d.\n' +
-                    'Press \'go\' to begin.') % itr_load)
+                     'Press \'go\' to begin.') % itr_load)
             return itr_load + 1
 
     def _take_sample(self, itr, cond, i):
@@ -249,7 +253,7 @@ class GPSMain(object):
         if self.gui:
             self.gui.set_status_text('Logging data and updating GUI.')
             self.gui.update(itr, self.algorithm, self.agent,
-                traj_sample_lists, pol_sample_lists)
+                            traj_sample_lists, pol_sample_lists)
             self.gui.save_figure(
                 self._data_files_dir + ('figure_itr_%02d.png' % itr)
             )
@@ -277,6 +281,7 @@ class GPSMain(object):
             if self._quit_on_end:
                 # Quit automatically (for running sequential expts)
                 os._exit(1)
+
 
 def main():
     """ Main function to be run. """

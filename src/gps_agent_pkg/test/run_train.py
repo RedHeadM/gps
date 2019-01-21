@@ -1,22 +1,25 @@
-import time
+import argparse
+import logging
 import os
+import time
+
 import numpy as np
+
+import _pickle as cPickle
+import rospy
 import scipy
 import scipy.io
-import logging
-import argparse
-import cPickle
-from gps.hyperparam_pr2 import defaults
-from gps.sample.sample import Sample
-from gps.algorithm.dynamics.dynamics_prior_gmm import DynamicsPriorGMM
 from gps.agent.ros.agent_ros import AgentROS
+from gps.algorithm.dynamics.dynamics_prior_gmm import DynamicsPriorGMM
+from gps.hyperparam_pr2 import defaults
 from gps.proto.gps_pb2 import *
-import rospy
+from gps.sample.sample import Sample
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 logging.debug("Test debug message")
 np.set_printoptions(suppress=True)
 THIS_FILE_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 def setup_agent(T=100):
     defaults['agent']['T'] = T
@@ -26,6 +29,7 @@ def setup_agent(T=100):
     r = rospy.Rate(1)
     r.sleep()
     return agent
+
 
 def run_offline():
     """
@@ -41,10 +45,10 @@ def run_offline():
         agent.reset(m)
 
     n = 0
-    for itr in range(15): # Iterations
+    for itr in range(15):  # Iterations
         print 'iter: ', itr
         for m in range(conditions):
-            for i in range(2): # Trials per iteration
+            for i in range(2):  # Trials per iteration
                 pol = algorithm.cur[m].traj_distr
                 sample = agent.sample(pol, m)
                 idxs[m].append(n)
@@ -52,6 +56,8 @@ def run_offline():
                 n += 1
         algorithm.iteration([agent.get_samples(m, -n) for m in range(conditions)])
         print 'Finished itr ', itr
-    import pdb; pdb.set_trace()
+    import pdb
+    pdb.set_trace()
+
 
 run_offline()
